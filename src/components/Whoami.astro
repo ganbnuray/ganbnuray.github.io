@@ -10,7 +10,7 @@ import { resumeUrl } from '../lib/resume';
     <h1 class="name">{site.greeting}<span class="cur" aria-hidden="true"></span></h1>
     <p>{site.bio}</p>
     <dl class="kv">
-      {site.facts.map((f) => (<><dt>{f.label}</dt><dd>{f.value}</dd></>))}
+      {site.facts.map((f) => (<><dt>{f.label}</dt><dd>{[f.value].flat().map((v) => <span>{v}</span>)}</dd></>))}
       <dt>contact</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
       <dt>links</dt>
       <dd class="row">

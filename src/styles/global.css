@@ -151,11 +151,13 @@ main > section + section {
 .kv {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 2px 28px;
+  gap: 8px 28px;
   margin: 0 0 28px;
 }
 .kv dt { color: var(--dim); }
 .kv dd { margin: 0; }
+.kv dd > span { display: block; }
+.kv dd > span + span { margin-top: 6px; }
 .kv .row { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 
 /* [+] toggles on <details> */
