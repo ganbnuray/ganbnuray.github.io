@@ -1,18 +1,34 @@
 ---
 import Prompt from './Prompt.astro';
+import Photo from './Photo.astro';
+import Stack from './Stack.astro';
 import { research } from '../data/research';
 ---
 {research.length > 0 && (
   <section id="research">
     <Prompt cmd="cat" target="Research/*.md" />
     <div class="out md">
-      {research.map((r) => (
-        <div class="entry">
-          <h2>{r.title}</h2>
-          <p class="when">{r.who}</p>
-          <p>{r.summary}</p>
-        </div>
-      ))}
+      {research.map((r) => {
+        const body = (
+          <>
+            <h2>{r.title}</h2>
+            {r.who && <p class="when">{r.who}</p>}
+            <p>{r.summary}</p>
+            <Stack items={r.stack} />
+            {r.links && r.links.length > 0 && (
+              <p class="links"><span class="label">links:</span> {r.links.map((l) => <a href={l.url}>{l.label}</a>)}</p>
+            )}
+          </>
+        );
+        return r.photo
+          ? (
+            <article class="proj research entry">
+              <Photo path={`research/${r.photo}`} caption={r.caption} width={320} />
+              <div class="blk">{body}</div>
+            </article>
+          )
+          : <div class="entry">{body}</div>;
+      })}
     </div>
   </section>
 )}

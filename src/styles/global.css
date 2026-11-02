@@ -222,6 +222,8 @@ figcaption { font-size: 14px; line-height: 1.5; margin-top: 8px; }
 
 /* gallery photos keep their own shape */
 .gallery .slot:not(.empty) { aspect-ratio: auto; }
+/* research images show whole, since they are often diagrams */
+.research > .shot .slot:not(.empty) { object-fit: contain; background: #fafafa; }
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
