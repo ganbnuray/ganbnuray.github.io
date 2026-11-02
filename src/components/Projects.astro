@@ -1,0 +1,45 @@
+---
+import { getCollection, render } from 'astro:content';
+import Prompt from './Prompt.astro';
+import Photo from './Photo.astro';
+import Stack from './Stack.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const rendered = await Promise.all(projects.map(async (p) => ({ p, Content: (await render(p)).Content })));
+---
+<section id="projects">
+  <Prompt cmd="ls" target="Projects/" />
+  <div class="out">
+    <nav class="ls" aria-label="Projects">
+      {projects.map((p) => <a href={`#${p.id}`}>{p.id}/</a>)}
+    </nav>
+  </div>
+  <div class="out md">
+    {rendered.map(({ p, Content }) => {
+      const d = p.data;
+      const gallery = Object.entries(d.photos);
+      return (
+        <article class="proj" id={p.id}>
+          <Photo path={`projects/${p.id}/cover`} caption={d.cover} width={320} />
+          <div class="blk">
+            <h2>{d.title}</h2>
+            {d.where && <p class="when">{d.where}</p>}
+            <div class="body"><Content /></div>
+            <Stack items={d.stack} />
+            {d.links.length > 0 && (
+              <p class="links"><span class="label">links:</span> {d.links.map((l) => <a href={l.url}>{l.label}</a>)}</p>
+            )}
+            {gallery.length > 0 && (
+              <details open={d.open}>
+                <summary>photos</summary>
+                <div class="gallery">
+                  {gallery.map(([file, caption]) => <Photo path={`projects/${p.id}/${file}`} caption={caption} />)}
+                </div>
+              </details>
+            )}
+          </div>
+        </article>
+      );
+    })}
+  </div>
+</section>

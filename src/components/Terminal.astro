@@ -1,0 +1,24 @@
+---
+import { site } from '../data/site';
+import { resumeUrl } from '../lib/resume';
+
+interface Props { dirs: string[] }
+const { dirs } = Astro.props;
+const github = site.links.find((l) => l.label === 'github')?.url ?? '';
+---
+<section
+  id="term"
+  aria-label="Interactive terminal"
+  data-dirs={dirs.join(',')}
+  data-user={`${site.user}@${site.host}`}
+  data-email={site.email}
+  data-resume={resumeUrl}
+  data-github={github}
+>
+  <p class="cmd dim"># type help, or keep scrolling</p>
+  <div id="log" aria-live="polite"></div>
+  <div class="inrow">
+    <label for="cmd"><span class="u">{site.user}@{site.host}</span>:<span class="p">~</span>$</label>
+    <input id="cmd" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" />
+  </div>
+</section>

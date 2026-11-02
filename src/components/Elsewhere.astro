@@ -1,0 +1,21 @@
+---
+import Prompt from './Prompt.astro';
+import Photo from './Photo.astro';
+import { cities, elsewhereIntro } from '../data/elsewhere';
+---
+{cities.length > 0 && (
+  <section id="elsewhere">
+    <Prompt cmd="ls" target="~/Elsewhere" />
+    <div class="out">
+      <p>{elsewhereIntro}</p>
+      <div class="strip cities">
+        {cities.map((c) => (
+          <div class="city">
+            <Photo path={`elsewhere/${c.slug}`} width={420} />
+            <p><span aria-hidden="true">{c.flag}</span> {c.name}/ <span class="dim">{c.note}</span></p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

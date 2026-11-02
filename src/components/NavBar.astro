@@ -1,0 +1,14 @@
+---
+import { site } from '../data/site';
+
+interface Props { sections: { id: string; label: string }[] }
+const { sections } = Astro.props;
+---
+<nav class="bar" aria-label="Sections">
+  <span class="host">{site.host}</span>
+  <div class="tabs">
+    {sections.map((s, i) => <a href={`#${s.id}`} data-sec={s.id}>{i}:{s.label}</a>)}
+  </div>
+  <button type="button" class="theme" id="theme" aria-label="Switch light or dark theme">theme</button>
+  <a class="mail" href={`mailto:${site.email}`}>email</a>
+</nav>

@@ -1,0 +1,22 @@
+---
+import { Image } from 'astro:assets';
+import { photo } from '../lib/photos';
+
+interface Props {
+  // path inside photos/, e.g. "hero/1".
+  path: string;
+  caption?: string;
+  // output width in pixels.
+  width?: number;
+  // prefix the caption with #.
+  comment?: boolean;
+}
+const { path, caption = '', width = 520, comment = true } = Astro.props;
+const img = photo(path);
+---
+<figure class="shot">
+  {img
+    ? <Image src={img} alt={caption} width={width} class="slot" />
+    : <div class="slot empty" aria-hidden="true"><span>photos/{path}.jpg</span></div>}
+  {caption && <figcaption>{comment ? '# ' : ''}{caption}</figcaption>}
+</figure>

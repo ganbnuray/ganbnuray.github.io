@@ -1,0 +1,32 @@
+---
+import Prompt from './Prompt.astro';
+import Photo from './Photo.astro';
+import { site } from '../data/site';
+import { resumeUrl } from '../lib/resume';
+---
+<section id="whoami">
+  <Prompt cmd="whoami" typed />
+  <div class="out">
+    <h1 class="name">{site.greeting}<span class="cur" aria-hidden="true"></span></h1>
+    <p>{site.bio}</p>
+    <dl class="kv">
+      {site.facts.map((f) => (<><dt>{f.label}</dt><dd>{f.value}</dd></>))}
+      <dt>contact</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+      <dt>links</dt>
+      <dd class="row">
+        {resumeUrl && <a href={resumeUrl}>resume.pdf</a>}
+        {site.links.map((l) => <a href={l.url}>{l.label}</a>)}
+      </dd>
+    </dl>
+    <div class="strip">
+      {site.hero.map((h) => <Photo path={`hero/${h.photo}`} caption={h.caption} />)}
+    </div>
+  </div>
+</section>
+
+<section id="interests">
+  <Prompt cmd="cat" target="interests.txt" />
+  <div class="out">
+    {site.interests.map((p) => <p>{p}</p>)}
+  </div>
+</section>

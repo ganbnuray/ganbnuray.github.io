@@ -1,0 +1,18 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  // command, e.g. "cat".
+  cmd: string;
+  // argument, shown in bold.
+  target?: string;
+  // type out on load. only for the first prompt.
+  typed?: boolean;
+}
+const { cmd, target, typed = false } = Astro.props;
+---
+<p class="cmd">
+  <span class="u">{site.user}@{site.host}</span>:<span class="p">~</span>{'$ '}{typed
+    ? <span id="typed">{cmd}{target && ' '}{target && <b class="target">{target}</b>}</span>
+    : <>{cmd}{target && ' '}{target && <b class="target">{target}</b>}</>}
+</p>

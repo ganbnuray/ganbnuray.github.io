@@ -1,0 +1,40 @@
+---
+import Prompt from './Prompt.astro';
+import Stack from './Stack.astro';
+import { experience, earlier, type Role } from '../data/experience';
+---
+<section id="experience">
+  <Prompt cmd="cat" target="experience.md" />
+  <div class="out md">
+    {experience.map((c) => {
+      const single = c.roles.length === 1;
+      return (
+        <div class="entry">
+          <h2>{c.name}</h2>
+          {single
+            ? <p class="when">{c.roles[0].title}, {c.roles[0].dates}</p>
+            : c.note && <p class="when">{c.note}</p>}
+          {c.roles.map((r: Role) => (
+            <div class="role">
+              {!single && <h3>{r.title} <span class="when">{r.dates}</span></h3>}
+              <p>{r.summary}</p>
+              <Stack items={r.stack} />
+              {r.more && r.more.length > 0 && (
+                <details open={r.open}>
+                  <summary>more</summary>
+                  <ul>{r.more.map((m) => <li>{m}</li>)}</ul>
+                </details>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    })}
+    {earlier && (
+      <div class="entry">
+        <h2>Earlier</h2>
+        <p>{earlier}</p>
+      </div>
+    )}
+  </div>
+</section>

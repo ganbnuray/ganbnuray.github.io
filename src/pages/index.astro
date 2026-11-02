@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import Whoami from '../components/Whoami.astro';
+import Experience from '../components/Experience.astro';
+import Projects from '../components/Projects.astro';
+import Research from '../components/Research.astro';
+import Elsewhere from '../components/Elsewhere.astro';
+import Terminal from '../components/Terminal.astro';
+import NavBar from '../components/NavBar.astro';
+import { research } from '../data/research';
+import { cities } from '../data/elsewhere';
+
+// bottom bar tabs. empty sections are left out.
+const sections = [
+  { id: 'whoami', label: 'whoami' },
+  { id: 'experience', label: 'experience' },
+  { id: 'projects', label: 'projects' },
+  research.length > 0 && { id: 'research', label: 'research' },
+  cities.length > 0 && { id: 'elsewhere', label: 'elsewhere' },
+].filter(Boolean) as { id: string; label: string }[];
+
+// sections the terminal's cd and ls know about.
+const dirs = ['whoami', 'interests', ...sections.slice(1).map((s) => s.id)];
+---
+<Base>
+  <Whoami />
+  <Experience />
+  <Projects />
+  <Research />
+  <Elsewhere />
+  <Terminal dirs={dirs} />
+  <NavBar slot="bar" sections={sections} />
+</Base>

@@ -1,0 +1,18 @@
+---
+import Prompt from './Prompt.astro';
+import { research } from '../data/research';
+---
+{research.length > 0 && (
+  <section id="research">
+    <Prompt cmd="cat" target="Research/*.md" />
+    <div class="out md">
+      {research.map((r) => (
+        <div class="entry">
+          <h2>{r.title}</h2>
+          <p class="when">{r.who}</p>
+          <p>{r.summary}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+)}
