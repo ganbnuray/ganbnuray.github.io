@@ -1,6 +1,7 @@
 // page behavior.
 
 import { startBallerina } from './ballerina';
+import { playMusicBox } from './musicbox';
 
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -234,14 +235,17 @@ if (term && log && input) {
     }
   }
 
-  // the music box: a ballerina turning a pirouette.
+  // the music box: a ballerina turning to swan lake.
   let stopDance: (() => void) | null = null;
   let stage: HTMLElement | null = null;
+  let music: ReturnType<typeof playMusicBox> | null = null;
 
   function endDance(quiet = false) {
     if (!stopDance) return;
     stopDance();
     stopDance = null;
+    music?.stop();
+    music = null;
     stage?.remove();
     stage = null;
     if (!quiet) print('the curtain falls', 'dim');
@@ -251,10 +255,11 @@ if (term && log && input) {
     endDance(true);
     stage = document.createElement('div');
     stage.className = 'stage';
-    stage.innerHTML = '<pre class="ballet" aria-label="an ASCII ballerina turning a pirouette"></pre><p class="hint">esc or q to stop</p>';
+    stage.innerHTML = '<pre class="ballet" aria-label="an ASCII ballerina turning a pirouette"></pre><p class="hint">esc or q to stop, mute to silence the music</p>';
     log!.appendChild(stage);
     // the stage has 36px of padding and border around the figure.
     stopDance = startBallerina(stage.querySelector('pre')!, calm, () => log!.clientWidth - 40);
+    music = playMusicBox();
   }
 
   function run(raw: string) {
@@ -263,6 +268,7 @@ if (term && log && input) {
     if (history[history.length - 1] !== raw) history.push(raw);
     const lower = raw.toLowerCase().replace(/\s+/g, ' ');
     if (stopDance && ['q', 'exit', 'stop'].includes(lower)) return endDance();
+    if (music && lower === 'mute') return print(music.toggleMute() ? 'music off' : 'music on', 'dim');
     const [name, arg = ''] = raw.split(/\s+/);
     const cmd = commands[name.toLowerCase()];
     if (cmd) cmd.run(arg);
