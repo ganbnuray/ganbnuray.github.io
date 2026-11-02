@@ -1,5 +1,7 @@
 // page behavior.
 
+import { startBallerina } from './ballerina';
+
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // typing intro
@@ -149,7 +151,7 @@ if (term && log && input) {
       help: 'list commands',
       run: () => {
         const rows = Object.entries(commands)
-          .map(([name, c]) => `<span class="k">${name.padEnd(8, ' ')}</span>${c.help}`)
+          .map(([name, c]) => `<span class="k">${name.padEnd(10, ' ')}</span>${c.help}`)
           .join('<br>');
         print(`${rows}<br><span class="dim">tab completes, up and down walk history</span>`);
       },
@@ -184,7 +186,14 @@ if (term && log && input) {
     github: { help: 'open my github', run: () => open(cfg.github ?? '', 'github') },
     theme: { help: 'switch light or dark', run: () => print(`theme: ${toggleTheme()}`, 'dim') },
     date: { help: 'print the date', run: () => print(new Date().toDateString()) },
-    clear: { help: 'clear the screen', run: () => (log!.innerHTML = '') },
+    musicbox: { help: 'open the music box', run: () => openMusicBox() },
+    clear: {
+      help: 'clear the screen',
+      run: () => {
+        endDance(true);
+        log!.innerHTML = '';
+      },
+    },
   };
 
   // up and down arrows move through history.
@@ -225,10 +234,35 @@ if (term && log && input) {
     }
   }
 
+  // the music box: a ballerina turning a pirouette.
+  let stopDance: (() => void) | null = null;
+  let stage: HTMLElement | null = null;
+
+  function endDance(quiet = false) {
+    if (!stopDance) return;
+    stopDance();
+    stopDance = null;
+    stage?.remove();
+    stage = null;
+    if (!quiet) print('the curtain falls', 'dim');
+  }
+
+  function openMusicBox() {
+    endDance(true);
+    stage = document.createElement('div');
+    stage.className = 'stage';
+    stage.innerHTML = '<pre class="ballet" aria-label="an ASCII ballerina turning a pirouette"></pre><p class="hint">esc or q to stop</p>';
+    log!.appendChild(stage);
+    // the stage has 36px of padding and border around the figure.
+    stopDance = startBallerina(stage.querySelector('pre')!, calm, () => log!.clientWidth - 40);
+  }
+
   function run(raw: string) {
     print(promptHtml() + esc(raw));
     if (!raw) return;
     if (history[history.length - 1] !== raw) history.push(raw);
+    const lower = raw.toLowerCase().replace(/\s+/g, ' ');
+    if (stopDance && ['q', 'exit', 'stop'].includes(lower)) return endDance();
     const [name, arg = ''] = raw.split(/\s+/);
     const cmd = commands[name.toLowerCase()];
     if (cmd) cmd.run(arg);
@@ -236,7 +270,10 @@ if (term && log && input) {
   }
 
   input.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') {
+    if (e.key === 'Escape' && stopDance) {
+      e.preventDefault();
+      endDance();
+    } else if (e.key === 'Tab') {
       e.preventDefault();
       complete();
     } else if (e.key === 'ArrowUp') {

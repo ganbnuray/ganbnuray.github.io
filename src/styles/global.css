@@ -265,6 +265,29 @@ figcaption { font-size: 14px; line-height: 1.5; margin-top: 8px; }
 #cmd:focus-visible { outline: none; }
 .inrow:focus-within label .u { text-decoration: underline; text-underline-offset: 4px; }
 
+/* hidden ballerina in the terminal */
+.stage {
+  display: inline-block;
+  margin: 10px 0 14px;
+  padding: 14px 18px 10px;
+  max-width: 100%;
+  background: #0e0d10;
+  border: 1px solid #26232a;
+  border-radius: 6px;
+}
+.stage .hint { margin: 6px 0 0; color: #7d7680; font-size: 12px; }
+.ballet {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #e8f4fc;
+  text-shadow: 0 0 6px rgba(169, 205, 242, 0.3);
+  white-space: pre;
+  overflow: hidden;
+}
+
 /* bottom bar */
 .bar {
   position: fixed;
