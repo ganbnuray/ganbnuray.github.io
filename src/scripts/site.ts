@@ -107,9 +107,16 @@ document.getElementById('theme')?.addEventListener('click', toggleTheme);
 
 // terminal
 
+// set when a command jumps to a section, so the input does not pull the page back.
+let jumped = false;
+
 function goTo(id: string) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  jumped = true;
   pin(id);
-  document.getElementById(id)?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth' });
+  // after the current frame, so nothing else cancels the scroll.
+  requestAnimationFrame(() => target.scrollIntoView({ behavior: calm ? 'auto' : 'smooth' }));
 }
 
 const term = document.getElementById('term');
@@ -241,10 +248,12 @@ if (term && log && input) {
     } else if (e.key === 'Enter') {
       const raw = input.value.trim();
       input.value = '';
+      jumped = false;
       run(raw);
       pos = history.length;
       draft = '';
-      input.scrollIntoView({ block: 'nearest' });
+      if (jumped) input.blur();
+      else input.scrollIntoView({ block: 'nearest' });
     }
   });
 
