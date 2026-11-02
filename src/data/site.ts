@@ -27,7 +27,7 @@ export const site = {
   email: 'nuray@uni.minerva.edu',
 
   // used when public/resume.pdf does not exist.
-  resumeFallback: 'https://drive.google.com/file/d/1SZ37F85j3z50JWUia--2KER1zdpN_pXr/view?usp=sharing',
+  resumeFallback: 'https://drive.google.com/file/d/1SkcaovW5nhk4B60NSK5f8MtPEXEZ6Vet/view?usp=sharing',
 
   links: [
     { label: 'github', url: 'https://github.com/ganbnuray' },
