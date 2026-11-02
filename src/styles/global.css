@@ -219,6 +219,7 @@ figcaption { font-size: 14px; line-height: 1.5; margin-top: 8px; }
   width: min(960px, calc(100vw - clamp(0px, 12vw, 200px) - 48px));
 }
 .city p { font-size: 15px; margin: 8px 0 0; }
+.strip.cities { grid-template-columns: repeat(5, 1fr); gap: 16px; }
 
 /* gallery photos keep their own shape */
 .gallery .slot:not(.empty) { aspect-ratio: auto; }
@@ -319,6 +320,7 @@ figcaption { font-size: 14px; line-height: 1.5; margin-top: 8px; }
   body { font-size: 14px; }
   main { margin: 0; padding-top: 32px; }
   .strip { grid-template-columns: repeat(2, 1fr); gap: 12px; width: auto; }
+  .strip.cities { grid-template-columns: repeat(2, 1fr); }
   .proj { grid-template-columns: 1fr; gap: 12px; }
   .proj > .shot { max-width: 260px; }
   .kv { grid-template-columns: 1fr; gap: 0; }

@@ -12,7 +12,7 @@ import { cities, elsewhereIntro } from '../data/elsewhere';
         {cities.map((c) => (
           <div class="city">
             <Photo path={`elsewhere/${c.slug}`} width={420} />
-            <p><span aria-hidden="true">{c.flag}</span> {c.name}/ <span class="dim">{c.note}</span></p>
+            <p><span aria-hidden="true">{c.flag}</span> {c.name}{c.note && <> <span class="dim">{c.note}</span></>}</p>
           </div>
         ))}
       </div>
