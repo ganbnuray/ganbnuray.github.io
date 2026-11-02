@@ -2,6 +2,6 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://ganbnuray.github.io',
+  site: 'https://nurayg.me',
   output: 'static',
 });
