@@ -82,3 +82,25 @@ document.addEventListener('click', (e) => {
 
 addEventListener('scroll', () => pinned || mark(current()), { passive: true });
 mark(current());
+
+// theme
+
+const root = document.documentElement;
+
+const systemDark = matchMedia('(prefers-color-scheme: dark)');
+const currentTheme = () =>
+  (root.dataset.theme as 'light' | 'dark' | undefined) ?? (systemDark.matches ? 'dark' : 'light');
+
+function setTheme(next: 'light' | 'dark') {
+  root.dataset.theme = next;
+  try {
+    localStorage.setItem('theme', next);
+  } catch {}
+}
+
+function toggleTheme() {
+  setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+  return currentTheme();
+}
+
+document.getElementById('theme')?.addEventListener('click', toggleTheme);
