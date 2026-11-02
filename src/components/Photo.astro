@@ -13,10 +13,12 @@ interface Props {
 }
 const { path, caption = '', width = 520, comment = true } = Astro.props;
 const img = photo(path);
+// path shown in an empty slot; adds .jpg only when there is no extension.
+const hint = /\.[a-z0-9]+$/i.test(path) ? path : `${path}.jpg`;
 ---
 <figure class="shot">
   {img
     ? <Image src={img} alt={caption} width={width} class="slot" />
-    : <div class="slot empty" aria-hidden="true"><span>photos/{path}.jpg</span></div>}
+    : <div class="slot empty" aria-hidden="true"><span>photos/{hint}</span></div>}
   {caption && <figcaption>{comment ? '# ' : ''}{caption}</figcaption>}
 </figure>
