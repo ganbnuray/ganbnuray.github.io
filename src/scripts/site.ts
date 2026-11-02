@@ -104,3 +104,152 @@ function toggleTheme() {
 }
 
 document.getElementById('theme')?.addEventListener('click', toggleTheme);
+
+// terminal
+
+function goTo(id: string) {
+  pin(id);
+  document.getElementById(id)?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth' });
+}
+
+const term = document.getElementById('term');
+const log = document.getElementById('log');
+const input = document.getElementById('cmd') as HTMLInputElement | null;
+
+if (term && log && input) {
+  const cfg = term.dataset;
+  const dirs = (cfg.dirs ?? '').split(',').filter(Boolean);
+  const promptHtml = () =>
+    `<span class="u">${esc(cfg.user ?? '')}</span>:<span class="p">~</span>$ `;
+
+  function esc(s: string) {
+    return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  }
+  function print(html: string, cls = '') {
+    const line = document.createElement('div');
+    line.className = `line ${cls}`.trim();
+    line.innerHTML = html;
+    log!.appendChild(line);
+  }
+  function open(url: string, label: string) {
+    if (!url) return print(`${label}: not set yet`, 'dim');
+    print(`opening ${esc(label)}`, 'dim');
+    window.open(url, '_blank', 'noopener');
+  }
+
+  const commands: Record<string, { help: string; run: (arg: string) => void }> = {
+    help: {
+      help: 'list commands',
+      run: () => {
+        const rows = Object.entries(commands)
+          .map(([name, c]) => `<span class="k">${name.padEnd(8, ' ')}</span>${c.help}`)
+          .join('<br>');
+        print(`${rows}<br><span class="dim">tab completes, up and down walk history</span>`);
+      },
+    },
+    ls: { help: 'list sections', run: () => print(dirs.map((d) => `${d}/`).join('  ')) },
+    cd: {
+      help: 'jump to a section, e.g. cd projects',
+      run: (arg) => {
+        const dir = arg.replace(/^~\/?/, '').replace(/\/$/, '');
+        if (!dir || dir === '..' || dir === '~') return goTo('whoami');
+        if (dirs.includes(dir)) goTo(dir);
+        else print(`cd: no such directory: ${esc(dir)}`, 'err');
+      },
+    },
+    whoami: { help: 'back to the top', run: () => goTo('whoami') },
+    email: {
+      help: 'write me an email',
+      run: () => {
+        const addr = cfg.email ?? '';
+        // the address as a link, copied too, since mailto does nothing without a mail app.
+        print(`<a href="mailto:${esc(addr)}">${esc(addr)}</a>`);
+        navigator.clipboard?.writeText(addr).then(
+          () => print('copied to clipboard', 'dim'),
+          () => {},
+        );
+        const link = document.createElement('a');
+        link.href = `mailto:${addr}`;
+        link.click();
+      },
+    },
+    resume: { help: 'open my resume', run: () => open(cfg.resume ?? '', 'resume') },
+    github: { help: 'open my github', run: () => open(cfg.github ?? '', 'github') },
+    theme: { help: 'switch light or dark', run: () => print(`theme: ${toggleTheme()}`, 'dim') },
+    date: { help: 'print the date', run: () => print(new Date().toDateString()) },
+    clear: { help: 'clear the screen', run: () => (log!.innerHTML = '') },
+  };
+
+  // up and down arrows move through history.
+  const history: string[] = [];
+  let pos = 0;
+  let draft = '';
+
+  function walk(step: number) {
+    if (!history.length) return;
+    if (pos === history.length) draft = input!.value;
+    pos = Math.min(Math.max(pos + step, 0), history.length);
+    input!.value = pos === history.length ? draft : history[pos];
+    requestAnimationFrame(() => input!.setSelectionRange(input!.value.length, input!.value.length));
+  }
+
+  // tab completes a command, or a section after cd.
+  function complete() {
+    const words = input!.value.split(/\s+/);
+    const first = words.length <= 1;
+    const pool = first ? Object.keys(commands) : words[0] === 'cd' ? dirs : [];
+    const part = (words[words.length - 1] ?? '').toLowerCase();
+    const hits = pool.filter((w) => w.startsWith(part));
+    if (!hits.length) return;
+    if (hits.length === 1) {
+      words[words.length - 1] = hits[0] + (first ? ' ' : '');
+      input!.value = words.join(' ');
+      return;
+    }
+    // several matches: fill the shared prefix, else list them.
+    let common = hits[0];
+    for (const h of hits) while (!h.startsWith(common)) common = common.slice(0, -1);
+    if (common.length > part.length) {
+      words[words.length - 1] = common;
+      input!.value = words.join(' ');
+    } else {
+      print(promptHtml() + esc(input!.value));
+      print(hits.join('  '), 'dim');
+    }
+  }
+
+  function run(raw: string) {
+    print(promptHtml() + esc(raw));
+    if (!raw) return;
+    if (history[history.length - 1] !== raw) history.push(raw);
+    const [name, arg = ''] = raw.split(/\s+/);
+    const cmd = commands[name.toLowerCase()];
+    if (cmd) cmd.run(arg);
+    else print(`command not found: ${esc(name)}. type help`, 'err');
+  }
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      complete();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      walk(-1);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      walk(1);
+    } else if (e.key === 'Enter') {
+      const raw = input.value.trim();
+      input.value = '';
+      run(raw);
+      pos = history.length;
+      draft = '';
+      input.scrollIntoView({ block: 'nearest' });
+    }
+  });
+
+  // clicks inside the terminal focus the input.
+  term.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('a') && !getSelection()?.toString()) input.focus();
+  });
+}
