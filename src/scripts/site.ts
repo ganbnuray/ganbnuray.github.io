@@ -253,3 +253,54 @@ if (term && log && input) {
     if (!(e.target as HTMLElement).closest('a') && !getSelection()?.toString()) input.focus();
   });
 }
+
+// sparkles
+
+// a click sends out a few diamonds and glints that drift down as they fade.
+function sparkAt(x: number, y: number) {
+  const styles = getComputedStyle(document.documentElement);
+  const fills = [styles.getPropertyValue('--spark-a'), styles.getPropertyValue('--spark-b')];
+  const kinds = ['gem', 'star', 'dot'] as const;
+  const count = 7 + Math.floor(Math.random() * 3);
+  for (let i = 0; i < count; i++) {
+    const kind = kinds[i % 3];
+    const size = kind === 'gem' ? 12 + Math.random() * 6 : kind === 'star' ? 14 + Math.random() * 8 : 4 + Math.random() * 3;
+    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.6;
+    const reach = 35 + Math.random() * 45;
+    const dx = Math.cos(angle) * reach;
+    const dy = Math.sin(angle) * reach;
+    const fall = 14 + Math.random() * 14;
+    // diamonds only tilt, so their cut stays readable.
+    const spin = kind === 'gem' ? 20 + Math.random() * 25 : 90 + Math.random() * 90;
+    const turn = (Math.random() < 0.5 ? -1 : 1) * spin;
+
+    const s = document.createElement('span');
+    s.className = `spark ${kind}`;
+    s.style.width = s.style.height = `${size}px`;
+    s.style.left = `${x - size / 2}px`;
+    s.style.top = `${y - size / 2}px`;
+    const fill = document.createElement('i');
+    fill.style.backgroundImage = fills[i % 2];
+    s.appendChild(fill);
+    document.body.appendChild(s);
+
+    s.animate(
+      [
+        { transform: 'translate(0, 0) scale(0) rotate(0deg)', opacity: 1 },
+        { transform: `translate(${dx * 0.6}px, ${dy * 0.6}px) scale(1) rotate(${turn / 3}deg)`, opacity: 1, offset: 0.25 },
+        { transform: `translate(${dx * 0.9}px, ${dy * 0.9 + fall * 0.4}px) scale(0.9) rotate(${(turn * 2) / 3}deg)`, opacity: 1, offset: 0.6 },
+        { transform: `translate(${dx}px, ${dy + fall}px) scale(0.3) rotate(${turn}deg)`, opacity: 0 },
+      ],
+      { duration: 950 + Math.random() * 300, easing: 'cubic-bezier(.2,.8,.4,1)' },
+    ).onfinish = () => s.remove();
+  }
+}
+
+if (!calm) {
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (e.detail === 0 || target.closest('input, textarea')) return;
+    if (getSelection()?.toString()) return;
+    sparkAt(e.clientX, e.clientY);
+  });
+}
