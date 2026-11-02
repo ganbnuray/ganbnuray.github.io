@@ -1,6 +1,7 @@
 ---
 import Prompt from './Prompt.astro';
 import Stack from './Stack.astro';
+import Photo from './Photo.astro';
 import { experience, earlier, type Role } from '../data/experience';
 ---
 <section id="experience">
@@ -17,12 +18,21 @@ import { experience, earlier, type Role } from '../data/experience';
           {c.roles.map((r: Role) => (
             <div class="role">
               {!single && <h3>{r.title} <span class="when">{r.dates}</span></h3>}
-              <p>{r.summary}</p>
+              {r.summary && [r.summary].flat().map((line) => <p>{line}</p>)}
+              {r.points && r.points.length > 0 && <ul class="points">{r.points.map((pt) => <li>{pt}</li>)}</ul>}
               <Stack items={r.stack} />
               {r.more && r.more.length > 0 && (
                 <details open={r.open}>
                   <summary>more</summary>
                   <ul>{r.more.map((m) => <li>{m}</li>)}</ul>
+                </details>
+              )}
+              {r.photos && Object.keys(r.photos).length > 0 && (
+                <details>
+                  <summary>photos</summary>
+                  <div class="gallery">
+                    {Object.entries(r.photos).map(([file, caption]) => <Photo path={`experience/${file}`} caption={caption} />)}
+                  </div>
                 </details>
               )}
             </div>

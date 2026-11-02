@@ -173,9 +173,11 @@ summary::-webkit-details-marker { display: none; }
 summary::before { content: '[+] '; }
 details[open] > summary::before { content: '[-] '; }
 details[open] > summary { margin-bottom: 8px; }
-details ul { margin: 0; padding: 0; list-style: none; }
-details li { position: relative; padding-left: 1.6em; margin-bottom: 8px; }
-details li::before { content: '-'; position: absolute; left: 0.4em; color: var(--dim); }
+/* dash lists, shown or behind a toggle */
+.role ul { margin: 0; padding: 0; list-style: none; }
+.role ul.points { margin-bottom: 1em; }
+.role li { position: relative; padding-left: 1.6em; margin-bottom: 8px; }
+.role li::before { content: '-'; position: absolute; left: 0.4em; color: var(--dim); }
 
 /* photos */
 .shot { margin: 0; }
