@@ -200,15 +200,17 @@ details li::before { content: '-'; position: absolute; left: 0.4em; color: var(-
   color: var(--dim);
   overflow-wrap: anywhere;
 }
-figcaption { font-size: 13px; line-height: 1.5; margin-top: 6px; }
+figcaption { font-size: 14px; line-height: 1.5; margin-top: 8px; }
 
+/* photo rows reach past the text column */
 .strip {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-top: 8px;
+  gap: 20px;
+  margin-top: 12px;
+  width: min(960px, calc(100vw - clamp(0px, 12vw, 200px) - 48px));
 }
-.city p { font-size: 14px; margin: 6px 0 0; }
+.city p { font-size: 15px; margin: 8px 0 0; }
 
 .gallery {
   display: grid;
@@ -292,7 +294,7 @@ figcaption { font-size: 13px; line-height: 1.5; margin-top: 6px; }
 @media (max-width: 720px) {
   body { font-size: 14px; }
   main { margin: 0; padding-top: 32px; }
-  .strip { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .strip { grid-template-columns: repeat(2, 1fr); gap: 12px; width: auto; }
   .proj { grid-template-columns: 1fr; gap: 12px; }
   .proj > .shot { max-width: 260px; }
   .kv { grid-template-columns: 1fr; gap: 0; }
